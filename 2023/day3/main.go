@@ -33,41 +33,40 @@ func FoundStar(row int, column int) int {
 			if !(graph[row+i-1][column+j-1] > 47 && graph[row+i-1][column+j-1] < 58) {
 				continue
 			}
-			number := createNumber(row+i-1, column+j-1)
-			if slices.Contains(numbers, number) {
-				continue
+			number := createNumber(row+i-1, column, &j)
+			if slices.Contains(numbers,number){
+				fmt.Println(numbers, number)
 			}
-			numbers = append(numbers,number)
+			numbers = append(numbers, number)
 		}
 	}
 	if len(numbers) < 2 {
 		return 0
 	}
-	if slices.Contains(numbers,705){
+	if slices.Contains(numbers, 705) {
 		fmt.Println(numbers)
 	}
 	ret := 0
-	for i:=0; i< len(numbers); i++{
-		for j:=i+1; j< len(numbers); j++{
+	for i := 0; i < len(numbers); i++ {
+		for j := i + 1; j < len(numbers); j++ {
 			ret += numbers[i] * numbers[j]
 		}
 	}
-	
 
 	return ret
 }
-func createNumber(row int, column int) int {
-	tmpNumber := []rune{graph[row][column]}
-	startLeft := column - 1
-	startRight := column + 1
-	for ; ; startRight++ {
-		if startRight == len(graph[row]) {
+func createNumber(row int, column int, j *int) int {
+	tmpNumber := []rune{graph[row][column-1+*j]}
+	startLeft := column - 2 + *j  
+	*j++
+	for ; ; *j++ {
+		if column+*j-1 == len(graph[row]) {
 			break
 		}
-		if !(graph[row][startRight] > 47 && graph[row][startRight] < 58) {
+		if !(graph[row][column+*j-1] > 47 && graph[row][column+*j-1] < 58) {
 			break
 		}
-		tmpNumber = append(tmpNumber,graph[row][startRight])
+		tmpNumber = append(tmpNumber, graph[row][column+*j-1])
 	}
 	for ; ; startLeft-- {
 		if startLeft == -1 {
@@ -76,7 +75,7 @@ func createNumber(row int, column int) int {
 		if !(graph[row][startLeft] > 47 && graph[row][startLeft] < 58) {
 			break
 		}
-		tmpNumber = append([]rune{graph[row][startLeft]},tmpNumber...)
+		tmpNumber = append([]rune{graph[row][startLeft]}, tmpNumber...)
 	}
 	ret, err := strconv.Atoi(string(tmpNumber))
 	if err != nil {
