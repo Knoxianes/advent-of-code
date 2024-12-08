@@ -39,18 +39,17 @@ func main() {
 			numberList = append(numberList, number)
 		}
 
-		middleNumber := numberList[len(numberList)/2]
-
-		if isSafe(&nodesMap, numberList) {
-			res += middleNumber
+		isSafe, goodOrder := isSafe(&nodesMap, numberList)
+		if !isSafe {
+			res += goodOrder[len(goodOrder)/2]
 		}
 	}
 
 	fmt.Println(res)
 }
 
-func isSafe(nodesMap *map[int][]int, numberList []int) bool {
-	isSafe := true
+func isSafe(nodesMap *map[int][]int, numberList []int) (bool, []int) {
+	ret := true
 	for i, x := range numberList {
 		listOfNumbers, found := (*nodesMap)[x]
 		if !found {
@@ -58,13 +57,30 @@ func isSafe(nodesMap *map[int][]int, numberList []int) bool {
 		}
 		for j, y := range numberList {
 			if i < j && slices.Contains(listOfNumbers, y) {
-				isSafe = false
+				ret = false
+
 				break
 			}
 		}
 	}
 
-	return isSafe
+	if !ret {
+		for i := 0; i < len(numberList); i++ {
+			listOfNumbers, found := (*nodesMap)[numberList[i]]
+			if !found {
+				continue
+			}
+			for j := 0; j < len(numberList); j++ {
+				if i < j && slices.Contains(listOfNumbers, numberList[j]) {
+					numberList[i], numberList[j] = numberList[j], numberList[i]
+					i = -1
+					break
+				}
+			}
+		}
+	}
+
+	return ret, numberList
 }
 
 func makeMap(firstNumber, secondNumber int, nodesMap *map[int][]int) {
