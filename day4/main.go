@@ -66,3 +66,4 @@ func traverse(i, j int, words *[]Word) {
 		*words = append(*words, Word{})
 	}
 }
+
